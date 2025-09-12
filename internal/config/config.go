@@ -1,14 +1,17 @@
 package config
 
 import (
+	"log"
 	"os"
-	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 // Config holds all configuration for our application
 type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
+	GRPC     GRPCConfig
 }
 
 // ServerConfig holds server configuration
@@ -27,8 +30,19 @@ type DatabaseConfig struct {
 	SSLMode  string
 }
 
+// GRPCConfig holds gRPC configuration
+type GRPCConfig struct {
+	Port string
+	Host string
+}
+
 // Load loads configuration from environment variables
 func Load() (*Config, error) {
+	// Load .env file if it exists
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using system environment variables")
+	}
+
 	cfg := &Config{
 		Server: ServerConfig{
 			Port: getEnv("SERVER_PORT", "8080"),
@@ -41,6 +55,10 @@ func Load() (*Config, error) {
 			Password: getEnv("DB_PASSWORD", "password"),
 			DBName:   getEnv("DB_NAME", "bookstore"),
 			SSLMode:  getEnv("DB_SSLMODE", "disable"),
+		},
+		GRPC: GRPCConfig{
+			Port: getEnv("GRPC_PORT", "9090"),
+			Host: getEnv("GRPC_HOST", "localhost"),
 		},
 	}
 

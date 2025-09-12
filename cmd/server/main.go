@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"bookstore-api/internal/config"
 )
