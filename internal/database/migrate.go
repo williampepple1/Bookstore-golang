@@ -275,27 +275,27 @@ func Connect(cfg *config.Config) (*gorm.DB, error) {
 		// If database doesn't exist, try to create it
 		if strings.Contains(err.Error(), "does not exist") {
 			log.Println("Database does not exist, attempting to create it...")
-			
+
 			// Connect to postgres database to create the target database
 			postgresDSN := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=postgres sslmode=%s",
 				cfg.Database.Host, cfg.Database.Port, cfg.Database.User, cfg.Database.Password, cfg.Database.SSLMode)
-			
+
 			postgresDB, err := gorm.Open(postgres.Open(postgresDSN), &gorm.Config{})
 			if err != nil {
 				return nil, fmt.Errorf("failed to connect to postgres database: %w", err)
 			}
-			
+
 			// Create the database
 			if err := postgresDB.Exec(fmt.Sprintf("CREATE DATABASE %s", cfg.Database.DBName)).Error; err != nil {
 				sqlDB, _ := postgresDB.DB()
 				sqlDB.Close()
 				return nil, fmt.Errorf("failed to create database %s: %w", cfg.Database.DBName, err)
 			}
-			
+
 			sqlDB, _ := postgresDB.DB()
 			sqlDB.Close()
 			log.Printf("Database %s created successfully", cfg.Database.DBName)
-			
+
 			// Now try to connect to the newly created database
 			db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 			if err != nil {

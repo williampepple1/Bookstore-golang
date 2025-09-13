@@ -59,28 +59,41 @@ func (s *HTTPServer) SetupRoutes() {
 
 	// API v1 routes
 	api := s.app.Group("/api/v1")
-
-	// Placeholder routes - will be implemented in next milestone
-	api.Get("/books", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{
-			"message": "Books endpoint - coming soon",
-			"status":  "pending",
-		})
-	})
-
-	api.Get("/authors", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{
-			"message": "Authors endpoint - coming soon",
-			"status":  "pending",
-		})
-	})
-
-	api.Get("/categories", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{
-			"message": "Categories endpoint - coming soon",
-			"status":  "pending",
-		})
-	})
+	
+	// Initialize handlers
+	authorHandler := handlers.NewAuthorHandler()
+	categoryHandler := handlers.NewCategoryHandler()
+	bookHandler := handlers.NewBookHandler()
+	
+	// Author routes
+	authors := api.Group("/authors")
+	authors.Post("/", authorHandler.CreateAuthor)
+	authors.Get("/", authorHandler.GetAllAuthors)
+	authors.Get("/search", authorHandler.SearchAuthors)
+	authors.Get("/:id", authorHandler.GetAuthor)
+	authors.Put("/:id", authorHandler.UpdateAuthor)
+	authors.Delete("/:id", authorHandler.DeleteAuthor)
+	
+	// Category routes
+	categories := api.Group("/categories")
+	categories.Post("/", categoryHandler.CreateCategory)
+	categories.Get("/", categoryHandler.GetAllCategories)
+	categories.Get("/search", categoryHandler.SearchCategories)
+	categories.Get("/:id", categoryHandler.GetCategory)
+	categories.Put("/:id", categoryHandler.UpdateCategory)
+	categories.Delete("/:id", categoryHandler.DeleteCategory)
+	
+	// Book routes
+	books := api.Group("/books")
+	books.Post("/", bookHandler.CreateBook)
+	books.Get("/", bookHandler.GetAllBooks)
+	books.Get("/search", bookHandler.SearchBooks)
+	books.Get("/author/:authorId", bookHandler.GetBooksByAuthor)
+	books.Get("/category/:categoryId", bookHandler.GetBooksByCategory)
+	books.Get("/:id", bookHandler.GetBook)
+	books.Put("/:id", bookHandler.UpdateBook)
+	books.Put("/:id/stock", bookHandler.UpdateBookStock)
+	books.Delete("/:id", bookHandler.DeleteBook)
 
 	// Root route
 	s.app.Get("/", func(c *fiber.Ctx) error {

@@ -21,10 +21,9 @@ func main() {
 	log.Printf("Starting Bookstore API server on port %s", cfg.Server.Port)
 	log.Printf("Database: %s", cfg.Database.Host)
 
-	// Initialize database connection
-	db, err := database.Connect(cfg)
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+	// Initialize database connection using singleton pattern
+	if err := database.InitializeDB(cfg); err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
 	// Validate migration files before running
@@ -48,7 +47,7 @@ func main() {
 		}
 	}
 	
-	log.Printf("Database connection established: %v", db != nil)
+	log.Printf("Database connection established successfully")
 
 	// Initialize HTTP server
 	httpServer := server.NewHTTPServer(cfg)
@@ -70,7 +69,6 @@ func main() {
 		os.Exit(0)
 	}()
 
-	log.Printf("Database connection established: %v", db != nil)
 	log.Println("Starting servers...")
 
 	// Start HTTP server (blocking)
