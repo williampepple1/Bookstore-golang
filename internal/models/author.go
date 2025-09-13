@@ -11,7 +11,7 @@ import (
 type Author struct {
 	ID        uuid.UUID      `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
 	Name      string         `json:"name" gorm:"not null;size:255" validate:"required,min=2,max=255"`
-	Email     string         `json:"email" gorm:"uniqueIndex;not null;size:255" validate:"required,email"`
+	Email     string         `json:"email" gorm:"uniqueIndex:uni_authors_email;not null;size:255" validate:"required,email"`
 	Biography string         `json:"biography" gorm:"type:text"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
