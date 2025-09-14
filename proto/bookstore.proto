@@ -1,0 +1,352 @@
+syntax = "proto3";
+
+package bookstore;
+
+option go_package = "bookstore-api/proto/bookstore";
+
+// Author service definition
+service AuthorService {
+  rpc CreateAuthor(CreateAuthorRequest) returns (CreateAuthorResponse);
+  rpc GetAuthor(GetAuthorRequest) returns (GetAuthorResponse);
+  rpc GetAllAuthors(GetAllAuthorsRequest) returns (GetAllAuthorsResponse);
+  rpc UpdateAuthor(UpdateAuthorRequest) returns (UpdateAuthorResponse);
+  rpc DeleteAuthor(DeleteAuthorRequest) returns (DeleteAuthorResponse);
+  rpc SearchAuthors(SearchAuthorsRequest) returns (SearchAuthorsResponse);
+}
+
+// Category service definition
+service CategoryService {
+  rpc CreateCategory(CreateCategoryRequest) returns (CreateCategoryResponse);
+  rpc GetCategory(GetCategoryRequest) returns (GetCategoryResponse);
+  rpc GetAllCategories(GetAllCategoriesRequest) returns (GetAllCategoriesResponse);
+  rpc UpdateCategory(UpdateCategoryRequest) returns (UpdateCategoryResponse);
+  rpc DeleteCategory(DeleteCategoryRequest) returns (DeleteCategoryResponse);
+  rpc SearchCategories(SearchCategoriesRequest) returns (SearchCategoriesResponse);
+}
+
+// Book service definition
+service BookService {
+  rpc CreateBook(CreateBookRequest) returns (CreateBookResponse);
+  rpc GetBook(GetBookRequest) returns (GetBookResponse);
+  rpc GetAllBooks(GetAllBooksRequest) returns (GetAllBooksResponse);
+  rpc UpdateBook(UpdateBookRequest) returns (UpdateBookResponse);
+  rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse);
+  rpc SearchBooks(SearchBooksRequest) returns (SearchBooksResponse);
+  rpc GetBooksByAuthor(GetBooksByAuthorRequest) returns (GetBooksByAuthorResponse);
+  rpc GetBooksByCategory(GetBooksByCategoryRequest) returns (GetBooksByCategoryResponse);
+  rpc UpdateBookStock(UpdateBookStockRequest) returns (UpdateBookStockResponse);
+}
+
+// Health service definition
+service HealthService {
+  rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// Common message types
+message Author {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string biography = 4;
+  string created_at = 5;
+  string updated_at = 6;
+  repeated Book books = 7;
+}
+
+message Category {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string created_at = 4;
+  string updated_at = 5;
+  repeated Book books = 6;
+}
+
+message Book {
+  string id = 1;
+  string title = 2;
+  string isbn = 3;
+  string description = 4;
+  double price = 5;
+  int32 stock = 6;
+  string published_at = 7;
+  string created_at = 8;
+  string updated_at = 9;
+  string author_id = 10;
+  string category_id = 11;
+  Author author = 12;
+  Category category = 13;
+}
+
+message Pagination {
+  int32 page = 1;
+  int32 limit = 2;
+  int64 total = 3;
+  int64 total_pages = 4;
+}
+
+// Author service messages
+message CreateAuthorRequest {
+  string name = 1;
+  string email = 2;
+  string biography = 3;
+}
+
+message CreateAuthorResponse {
+  bool success = 1;
+  string message = 2;
+  Author author = 3;
+}
+
+message GetAuthorRequest {
+  string id = 1;
+}
+
+message GetAuthorResponse {
+  bool success = 1;
+  string message = 2;
+  Author author = 3;
+}
+
+message GetAllAuthorsRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+message GetAllAuthorsResponse {
+  bool success = 1;
+  string message = 2;
+  repeated Author authors = 3;
+  Pagination pagination = 4;
+}
+
+message UpdateAuthorRequest {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string biography = 4;
+}
+
+message UpdateAuthorResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteAuthorRequest {
+  string id = 1;
+}
+
+message DeleteAuthorResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message SearchAuthorsRequest {
+  string query = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}
+
+message SearchAuthorsResponse {
+  bool success = 1;
+  string message = 2;
+  repeated Author authors = 3;
+  Pagination pagination = 4;
+}
+
+// Category service messages
+message CreateCategoryRequest {
+  string name = 1;
+  string description = 2;
+}
+
+message CreateCategoryResponse {
+  bool success = 1;
+  string message = 2;
+  Category category = 3;
+}
+
+message GetCategoryRequest {
+  string id = 1;
+}
+
+message GetCategoryResponse {
+  bool success = 1;
+  string message = 2;
+  Category category = 3;
+}
+
+message GetAllCategoriesRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+message GetAllCategoriesResponse {
+  bool success = 1;
+  string message = 2;
+  repeated Category categories = 3;
+  Pagination pagination = 4;
+}
+
+message UpdateCategoryRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message UpdateCategoryResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteCategoryRequest {
+  string id = 1;
+}
+
+message DeleteCategoryResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message SearchCategoriesRequest {
+  string query = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}
+
+message SearchCategoriesResponse {
+  bool success = 1;
+  string message = 2;
+  repeated Category categories = 3;
+  Pagination pagination = 4;
+}
+
+// Book service messages
+message CreateBookRequest {
+  string title = 1;
+  string isbn = 2;
+  string description = 3;
+  double price = 4;
+  int32 stock = 5;
+  string published_at = 6;
+  string author_id = 7;
+  string category_id = 8;
+}
+
+message CreateBookResponse {
+  bool success = 1;
+  string message = 2;
+  Book book = 3;
+}
+
+message GetBookRequest {
+  string id = 1;
+}
+
+message GetBookResponse {
+  bool success = 1;
+  string message = 2;
+  Book book = 3;
+}
+
+message GetAllBooksRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+message GetAllBooksResponse {
+  bool success = 1;
+  string message = 2;
+  repeated Book books = 3;
+  Pagination pagination = 4;
+}
+
+message UpdateBookRequest {
+  string id = 1;
+  string title = 2;
+  string isbn = 3;
+  string description = 4;
+  double price = 5;
+  int32 stock = 6;
+  string published_at = 7;
+  string author_id = 8;
+  string category_id = 9;
+}
+
+message UpdateBookResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteBookRequest {
+  string id = 1;
+}
+
+message DeleteBookResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message SearchBooksRequest {
+  string query = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}
+
+message SearchBooksResponse {
+  bool success = 1;
+  string message = 2;
+  repeated Book books = 3;
+  Pagination pagination = 4;
+}
+
+message GetBooksByAuthorRequest {
+  string author_id = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}
+
+message GetBooksByAuthorResponse {
+  bool success = 1;
+  string message = 2;
+  repeated Book books = 3;
+  Pagination pagination = 4;
+}
+
+message GetBooksByCategoryRequest {
+  string category_id = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}
+
+message GetBooksByCategoryResponse {
+  bool success = 1;
+  string message = 2;
+  repeated Book books = 3;
+  Pagination pagination = 4;
+}
+
+message UpdateBookStockRequest {
+  string id = 1;
+  int32 stock = 2;
+}
+
+message UpdateBookStockResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Health service messages
+message HealthCheckRequest {
+  string service = 1;
+}
+
+message HealthCheckResponse {
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+  }
+  ServingStatus status = 1;
+  string message = 2;
+}

@@ -8,6 +8,7 @@ import (
 
 	"bookstore-api/internal/config"
 	"bookstore-api/internal/database"
+	"bookstore-api/internal/grpc"
 	"bookstore-api/internal/server"
 )
 
@@ -46,12 +47,14 @@ func main() {
 			log.Printf("  - %s (applied at: %s)", migration.Version, migration.AppliedAt)
 		}
 	}
-	
+
 	log.Printf("Database connection established successfully")
 
-	// Initialize HTTP server
+	// Initialize servers
 	httpServer := server.NewHTTPServer(cfg)
 	httpServer.SetupRoutes()
+
+	grpcServer := grpc.NewGRPCServer()
 
 	// Setup graceful shutdown
 	c := make(chan os.Signal, 1)
@@ -63,6 +66,7 @@ func main() {
 		if err := httpServer.Shutdown(); err != nil {
 			log.Printf("Error shutting down HTTP server: %v", err)
 		}
+		// gRPC server will be stopped when the process exits
 		if err := database.CloseDB(); err != nil {
 			log.Printf("Error closing database: %v", err)
 		}
@@ -71,8 +75,20 @@ func main() {
 
 	log.Println("Starting servers...")
 
-	// Start HTTP server (blocking)
-	if err := httpServer.Start(); err != nil {
-		log.Fatalf("Failed to start HTTP server: %v", err)
-	}
+	// Start HTTP server in goroutine
+	go func() {
+		if err := httpServer.Start(); err != nil {
+			log.Fatalf("Failed to start HTTP server: %v", err)
+		}
+	}()
+
+	// Start gRPC server in goroutine
+	go func() {
+		if err := grpcServer.Start(cfg); err != nil {
+			log.Fatalf("Failed to start gRPC server: %v", err)
+		}
+	}()
+
+	// Keep the main goroutine alive
+	select {}
 }
